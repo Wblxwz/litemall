@@ -193,15 +193,20 @@ public class WxAuthController {
             return ResponseUtil.badArgumentValue();
         }
 
-        if (!notifyService.isSmsEnable()) {
-            return ResponseUtil.fail(AUTH_CAPTCHA_UNSUPPORT, "小程序后台验证码服务不支持");
-        }
-        String code = CharUtil.getRandomNum(6);
-        boolean successful = CaptchaCodeManager.addToCache(phoneNumber, code);
+        // 注释/删除短信发送相关逻辑（无需真实发送）
+        // if (!notifyService.isSmsEnable()) {
+        //     return ResponseUtil.fail(AUTH_CAPTCHA_UNSUPPORT, "小程序后台验证码服务不支持");
+        // }
+        
+        // 直接使用固定验证码，无需生成随机码
+        String fixedCode = "123456";
+        boolean successful = CaptchaCodeManager.addToCache(phoneNumber, fixedCode);
         if (!successful) {
             return ResponseUtil.fail(AUTH_CAPTCHA_FREQUENCY, "验证码未超时1分钟，不能发送");
         }
-        notifyService.notifySmsTemplate(phoneNumber, NotifyType.CAPTCHA, new String[]{code});
+
+        // 注释/删除真实短信发送逻辑
+        // notifyService.notifySmsTemplate(phoneNumber, NotifyType.CAPTCHA, new String[]{fixedCode});
 
         return ResponseUtil.ok();
     }

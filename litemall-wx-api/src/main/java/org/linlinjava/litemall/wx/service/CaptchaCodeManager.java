@@ -20,26 +20,24 @@ public class CaptchaCodeManager {
      * @param code        验证码
      */
     public static boolean addToCache(String phoneNumber, String code) {
+    // 固定验证码，忽略传入的code参数
+        String fixedCode = "123456";
 
-
-        //已经发过验证码且验证码还未过期
+        // 原有过期判断逻辑保留（防止1分钟内重复发送）
         if (captchaCodeCache.get(phoneNumber) != null) {
             if (captchaCodeCache.get(phoneNumber).getExpireTime().isAfter(LocalDateTime.now())) {
                 return false;
             } else {
-                //存在但是已过期，删掉
                 captchaCodeCache.remove(phoneNumber);
             }
         }
 
         CaptchaItem captchaItem = new CaptchaItem();
         captchaItem.setPhoneNumber(phoneNumber);
-        captchaItem.setCode(code);
-        // 有效期为1分钟
-        captchaItem.setExpireTime(LocalDateTime.now().plusMinutes(1));
+        captchaItem.setCode(fixedCode); // 存入固定验证码
+        captchaItem.setExpireTime(LocalDateTime.now().plusMinutes(1)); // 有效期仍为1分钟
 
         captchaCodeCache.put(phoneNumber, captchaItem);
-
         return true;
     }
 
